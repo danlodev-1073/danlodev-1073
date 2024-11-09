@@ -99,8 +99,8 @@
     <button id="loginButton" onclick="toggleLoginBox()">Login</button>
 
     <div id="loginBox">
-        <input type="password" id="password" placeholder="Passwort eingeben" required>
-        <button onclick="authenticate()">Öffnen</button>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="authenticate()">Open</button>
     </div>
 
     <script>
@@ -137,13 +137,13 @@
             try {
                 const response = await fetch('loadpage.json');
                 if (!response.ok) {
-                    throw new Error('Fehler beim Laden der loadpage.json');
+                    throw new Error('Error at loading loadpage.json');
                 }
                 const data = await response.json();
 
                 const encryptedContent = data.encryptedContent;
                 if (!encryptedContent) {
-                    throw new Error('Verschlüsselter Inhalt nicht gefunden.');
+                    throw new Error('Encrypted content not found.');
                 }
 
                 const bytes = CryptoJS.AES.decrypt(encryptedContent, password);
@@ -156,11 +156,11 @@
 
                     toggleLoginBox();
                 } else {
-                    alert('Falsches Passwort.');
+                    alert('Wrong Password.');
                 }
             } catch (error) {
                 console.error('Fehler:', error);
-                alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
+                alert('An error has occured. Please try later again.');
             }
         }
     </script>
