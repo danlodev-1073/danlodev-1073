@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>danlodev-1073</title>
+    <style>
+        /* Einbindung der benutzerdefinierten Schriftart */
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('font.ttf') format('truetype');
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+            font-family: 'CustomFont', Arial, sans-serif;
+        }
+
+        .typewriter {
+            font-size: 2em;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid #61dafb;
+            animation: caret 0.75s steps(1) infinite;
+        }
+
+        @keyframes caret {
+            50% {
+                border-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="typewriter-text" class="typewriter"></div>
+
+<script>
+    const text = "This website is the domain holder for danlodev-1073";
+    let index = 0;
+
+    function type() {
+        if (index < text.length) {
+            document.getElementById("typewriter-text").textContent += text.charAt(index);
+            index++;
+            setTimeout(type, 100); // Geschwindigkeit des Tippens
+        }
+    }
+
+    type();
+</script>
+
+</body>
+</html>
