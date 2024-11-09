@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>AES-256 Verschlüsselung und Entschlüsselung</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+
+    <h2>Verschlüsselung und Entschlüsselung mit AES-256</h2>
+
+    <label for="password">Passwort:</label>
+    <input type="password" id="password" placeholder="Passwort">
+
+    <label for="plaintext">Klartext:</label>
+    <input type="text" id="plaintext" placeholder="Text zum Verschlüsseln">
+
+    <label for="encryptedContent">Verschlüsselter Text:</label>
+    <input type="text" id="encryptedContent" placeholder="Verschlüsselter Text zum Entschlüsseln">
+
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button>
+
+    <script>
+        function encrypt() {
+            const password = document.getElementById('password').value;
+            const plaintext = document.getElementById('plaintext').value;
+
+            if (!password || !plaintext) {
+                console.log("Bitte gib sowohl ein Passwort als auch einen Klartext ein.");
+                return;
+            }
+
+            const encrypted = CryptoJS.AES.encrypt(plaintext, password).toString();
+            console.log("Verschlüsselter Text:", encrypted);
+        }
+
+        function decrypt() {
+            const password = document.getElementById('password').value;
+            const encryptedContent = document.getElementById('encryptedContent').value;
+
+            if (!password || !encryptedContent) {
+                console.log("Bitte gib sowohl ein Passwort als auch den verschlüsselten Text ein.");
+                return;
+            }
+
+            const bytes = CryptoJS.AES.decrypt(encryptedContent, password);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (decrypted) {
+                console.log("Entschlüsselter Text:", decrypted);
+            } else {
+                console.log("Falsches Passwort oder ungültiger verschlüsselter Text.");
+            }
+        }
+    </script>
+
+</body>
+</html>
