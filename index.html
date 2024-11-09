@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>danlodev-1073</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        /* Einbindung der benutzerdefinierten Schriftart */
         @font-face {
             font-family: 'CustomFont';
             src: url('font.ttf') format('truetype');
@@ -13,7 +13,6 @@
 
         body {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -21,6 +20,7 @@
             background-color: #282c34;
             color: white;
             font-family: 'CustomFont', Arial, sans-serif;
+            position: relative;
         }
 
         .typewriter {
@@ -38,89 +38,132 @@
             }
         }
 
-        /* Login-Bereich */
-        #loginForm {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #loginForm input {
-            margin: 5px;
-            padding: 8px;
-            font-size: 1em;
-        }
-
-        #loginForm button {
-            padding: 10px;
+        #loginButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
             background-color: #61dafb;
             color: black;
             border: none;
             cursor: pointer;
             font-size: 1em;
+            border-radius: 5px;
         }
 
-        #loginForm button:hover {
+        #loginButton:hover {
+            background-color: #21a1f1;
+        }
+
+        #loginBox {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            flex-direction: column;
+            align-items: center;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #loginBox input {
+            padding: 8px;
+            font-size: 1em;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #loginBox button {
+            padding: 10px 20px;
+            background-color: #61dafb;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        #loginBox button:hover {
             background-color: #21a1f1;
         }
     </style>
 </head>
 <body>
 
-<div id="typewriter-text" class="typewriter"></div>
+    <div id="typewriter-text" class="typewriter"></div>
 
-<!-- Login Formular -->
-<div id="loginForm">
-    <input type="text" id="username" placeholder="Benutzername" required>
-    <input type="password" id="password" placeholder="Passwort" required>
-    <button type="button" onclick="login()">Login</button>
-</div>
+    <button id="loginButton" onclick="toggleLoginBox()">Login</button>
 
-<script>
-    const text = "This website is the domain holder for danlodev-1073";
-    let index = 0;
+    <div id="loginBox">
+        <input type="password" id="password" placeholder="Passwort eingeben" required>
+        <button onclick="authenticate()">Öffnen</button>
+    </div>
 
-    function type() {
-        if (index < text.length) {
-            document.getElementById("typewriter-text").textContent += text.charAt(index);
-            index++;
-            setTimeout(type, 100); // Geschwindigkeit des Tippens
-        }
-    }
+    <script>
+        const text = "This website is the domain holder for danlodev-1073";
+        let index = 0;
 
-    type();
-
-    // Funktion zum Laden der Accounts aus der JSON-Datei
-    async function loadAccounts() {
-        try {
-            const response = await fetch('accounts.json');
-            if (!response.ok) {
-                throw new Error('Fehler beim Laden der Accounts');
+        function type() {
+            if (index < text.length) {
+                document.getElementById("typewriter-text").textContent += text.charAt(index);
+                index++;
+                setTimeout(type, 100);
             }
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-            alert('Fehler beim Laden der Accounts. Bitte später erneut versuchen.');
-            return [];
         }
-    }
 
-    // Login-Funktion
-    async function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        type();
 
-        const accounts = await loadAccounts();
-        const user = accounts.find(acc => acc.username === username && acc.password === password);
-
-        if (user) {
-            // Leitet zur Website des Benutzers weiter, wenn die Anmeldedaten korrekt sind
-            window.location.href = user.website;
-        } else {
-            alert('Ungültiger Benutzername oder Passwort.');
+        function toggleLoginBox() {
+            const loginBox = document.getElementById('loginBox');
+            if (loginBox.style.display === 'flex') {
+                loginBox.style.display = 'none';
+            } else {
+                loginBox.style.display = 'flex';
+                document.getElementById('password').focus();
+            }
         }
-    }
-</script>
+
+        async function authenticate() {
+            const password = document.getElementById('password').value.trim();
+            if (!password) {
+                alert('Bitte gib ein Passwort ein.');
+                return;
+            }
+
+            try {
+                const response = await fetch('loadpage.json');
+                if (!response.ok) {
+                    throw new Error('Fehler beim Laden der loadpage.json');
+                }
+                const data = await response.json();
+
+                const encryptedContent = data.encryptedContent;
+                if (!encryptedContent) {
+                    throw new Error('Verschlüsselter Inhalt nicht gefunden.');
+                }
+
+                const bytes = CryptoJS.AES.decrypt(encryptedContent, password);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+                if (decrypted) {
+                    const newWindow = window.open("", "_blank");
+                    newWindow.document.write(decrypted);
+                    newWindow.document.close();
+
+                    toggleLoginBox();
+                } else {
+                    alert('Falsches Passwort.');
+                }
+            } catch (error) {
+                console.error('Fehler:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
+            }
+        }
+    </script>
 
 </body>
 </html>
