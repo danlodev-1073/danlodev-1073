@@ -13,6 +13,7 @@
 
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -28,6 +29,7 @@
             overflow: hidden;
             border-right: .15em solid #61dafb;
             animation: caret 0.75s steps(1) infinite;
+            margin-bottom: 20px;
         }
 
         @keyframes caret {
@@ -35,11 +37,44 @@
                 border-color: transparent;
             }
         }
+
+        /* Login-Bereich */
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #loginForm input {
+            margin: 5px;
+            padding: 8px;
+            font-size: 1em;
+        }
+
+        #loginForm button {
+            padding: 10px;
+            background-color: #61dafb;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        #loginForm button:hover {
+            background-color: #21a1f1;
+        }
     </style>
 </head>
 <body>
 
 <div id="typewriter-text" class="typewriter"></div>
+
+<!-- Login Formular -->
+<div id="loginForm">
+    <input type="text" id="username" placeholder="Benutzername" required>
+    <input type="password" id="password" placeholder="Passwort" required>
+    <button type="button" onclick="login()">Login</button>
+</div>
 
 <script>
     const text = "This website is the domain holder for danlodev-1073";
@@ -54,6 +89,37 @@
     }
 
     type();
+
+    // Funktion zum Laden der Accounts aus der JSON-Datei
+    async function loadAccounts() {
+        try {
+            const response = await fetch('accounts.json');
+            if (!response.ok) {
+                throw new Error('Fehler beim Laden der Accounts');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            alert('Fehler beim Laden der Accounts. Bitte später erneut versuchen.');
+            return [];
+        }
+    }
+
+    // Login-Funktion
+    async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const accounts = await loadAccounts();
+        const user = accounts.find(acc => acc.username === username && acc.password === password);
+
+        if (user) {
+            // Leitet zur Website des Benutzers weiter, wenn die Anmeldedaten korrekt sind
+            window.location.href = user.website;
+        } else {
+            alert('Ungültiger Benutzername oder Passwort.');
+        }
+    }
 </script>
 
 </body>
